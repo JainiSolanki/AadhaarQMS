@@ -1,12 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const dynamoDB = require("../utils/dynamodb");
 
-// Temporary in-memory storage
-let appointments = [];
-let tokenCounter = 1;
+const TABLE_NAME = "Appointments";
 
 // POST: Book appointment
-router.post("/appointment", (req, res) => {
+router.post("/appointment", async (req, res) => {
   const { name, serviceType, date, timeSlot } = req.body;
 
   if (!name || !serviceType || !date || !timeSlot) {
@@ -14,21 +13,30 @@ router.post("/appointment", (req, res) => {
   }
 
   const appointment = {
-    id: Date.now().toString(),
+    appointmentId: Date.now().toString(),
     name,
     serviceType,
     date,
     timeSlot,
-    tokenNumber: tokenCounter++,
+    tokenNumber: Math.floor(Math.random() * 10000),
     status: "Pending"
   };
 
-  appointments.push(appointment);
+  const params = {
+    TableName: TABLE_NAME,
+    Item: appointment
+  };
 
-  res.status(201).json({
-    message: "Appointment booked successfully",
-    appointment
-  });
+  try {
+    await dynamoDB.put(params).promise();
+    res.status(201).json({
+      message: "Appointment booked successfully",
+      appointment
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error saving appointment" });
+  }
 });
 
 module.exports = router;
