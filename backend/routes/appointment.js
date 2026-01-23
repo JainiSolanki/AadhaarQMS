@@ -39,4 +39,19 @@ router.post("/appointment", async (req, res) => {
   }
 });
 
+// GET: Fetch all appointments (Admin)
+router.get("/appointments", async (req, res) => {
+  const params = {
+    TableName: TABLE_NAME
+  };
+
+  try {
+    const data = await dynamoDB.scan(params).promise();
+    res.status(200).json(data.Items);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching appointments" });
+  }
+});
+
 module.exports = router;
