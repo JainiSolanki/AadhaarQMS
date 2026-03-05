@@ -1,0 +1,238 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { Mail, Lock, Zap, ArrowRight, Eye, EyeOff, Shield, Clock, QrCode } from 'lucide-react';
+import toast from 'react-hot-toast';
+import useAuthStore from '@store/authStore';
+import Button from '@components/ui/Button';
+import Input from '@components/ui/Input';
+import ThemeToggle from '@components/shared/ThemeToggle';
+import { ROLE_DASHBOARD_PATHS } from '@utils/constants';
+
+const Login = () => {
+    const [tab, setTab] = useState('citizen');
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const { login, adminLogin } = useAuthStore();
+    const navigate = useNavigate();
+
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const onSubmit = async (data) => {
+        setLoading(true);
+        try {
+            let res;
+            if (tab === 'citizen') {
+                res = await login(data);
+                navigate(ROLE_DASHBOARD_PATHS.CITIZEN);
+            } else {
+                res = await adminLogin(data);
+                const role = res.data.admin.role;
+                navigate(ROLE_DASHBOARD_PATHS[role]);
+            }
+            toast.success(res.message || 'Login successful!');
+        } catch (err) {
+            toast.error(err.message || 'Login failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="page-bg min-h-screen flex">
+            {/* Left panel — branding */}
+            <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center overflow-hidden">
+                <div
+                    className="absolute inset-0"
+                    style={{ background: 'linear-gradient(135deg, rgba(255,107,43,0.08), rgba(26,111,212,0.08))' }}
+                />
+                {/* Decorative circles */}
+                <div className="absolute" style={{ width: '400px', height: '400px', borderRadius: '50%', border: '1px solid var(--border-subtle)', top: '-10%', left: '-10%', opacity: 0.4 }} />
+                <div className="absolute" style={{ width: '300px', height: '300px', borderRadius: '50%', border: '1px solid var(--border-subtle)', bottom: '-5%', right: '-5%', opacity: 0.3 }} />
+
+                <div className="relative z-10" style={{ maxWidth: '420px', padding: '0 3rem' }}>
+                    <Link to="/" className="flex items-center gap-2.5" style={{ marginBottom: '2.5rem' }}>
+                        <div
+                            className="w-11 h-11 flex items-center justify-center"
+                            style={{
+                                borderRadius: 'var(--radius-lg)',
+                                background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-light))',
+                            }}
+                        >
+                            <Zap size={22} className="text-white" />
+                        </div>
+                        <span className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>AadhaarQMS</span>
+                    </Link>
+
+                    <h2 className="font-extrabold" style={{ fontSize: '2.5rem', lineHeight: 1.1, marginBottom: '1rem' }}>
+                        Welcome<br />
+                        <span className="gradient-text">Back.</span>
+                    </h2>
+
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '2.5rem', fontSize: '1.05rem' }}>
+                        Sign in to manage your Aadhaar appointments, track queue positions, and access your personalized dashboard.
+                    </p>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {[
+                            { icon: Clock, text: 'Real-time queue tracking' },
+                            { icon: QrCode, text: 'E-token with QR code' },
+                            { icon: Shield, text: 'Multi-center support' },
+                        ].map((item) => (
+                            <div
+                                key={item.text}
+                                className="flex items-center"
+                                style={{
+                                    gap: '0.85rem',
+                                    padding: '0.75rem 1rem',
+                                    borderRadius: 'var(--radius-lg)',
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid var(--border-subtle)',
+                                }}
+                            >
+                                <div
+                                    className="flex items-center justify-center"
+                                    style={{
+                                        width: '2rem',
+                                        height: '2rem',
+                                        borderRadius: 'var(--radius-md)',
+                                        background: 'rgba(255,107,43,0.1)',
+                                        flexShrink: 0,
+                                    }}
+                                >
+                                    <item.icon size={14} style={{ color: 'var(--color-accent)' }} />
+                                </div>
+                                <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>{item.text}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Right panel — form */}
+            <div className="flex-1 flex items-center justify-center" style={{ padding: '2rem' }}>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full"
+                    style={{ maxWidth: '420px' }}
+                >
+                    {/* Mobile header */}
+                    <div className="flex items-center justify-between lg:hidden" style={{ marginBottom: '2rem' }}>
+                        <Link to="/" className="flex items-center gap-2">
+                            <div
+                                className="w-8 h-8 flex items-center justify-center"
+                                style={{
+                                    borderRadius: 'var(--radius-md)',
+                                    background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-light))',
+                                }}
+                            >
+                                <Zap size={16} className="text-white" />
+                            </div>
+                            <span className="text-base font-bold">AadhaarQMS</span>
+                        </Link>
+                        <ThemeToggle />
+                    </div>
+
+                    {/* Desktop theme toggle */}
+                    <div className="absolute top-6 right-6 hidden lg:block">
+                        <ThemeToggle />
+                    </div>
+
+                    {/* Form card */}
+                    <div
+                        style={{
+                            background: 'var(--bg-surface)',
+                            border: '1px solid var(--border-default)',
+                            borderRadius: 'var(--radius-2xl)',
+                            padding: '2.5rem 2rem',
+                        }}
+                    >
+                        <h1 className="text-2xl font-bold" style={{ marginBottom: '0.5rem' }}>Sign In</h1>
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)', marginBottom: '1.75rem' }}>
+                            Select your account type and enter your credentials.
+                        </p>
+
+                        {/* Tabs */}
+                        <div
+                            className="flex"
+                            style={{
+                                padding: '0.3rem',
+                                background: 'var(--bg-elevated)',
+                                borderRadius: 'var(--radius-lg)',
+                                marginBottom: '1.75rem',
+                            }}
+                        >
+                            {['citizen', 'admin'].map((t) => (
+                                <button
+                                    key={t}
+                                    onClick={() => setTab(t)}
+                                    className="flex-1 text-sm font-medium transition-all capitalize cursor-pointer"
+                                    style={{
+                                        padding: '0.65rem 1rem',
+                                        borderRadius: 'var(--radius-md)',
+                                        ...(tab === t
+                                            ? { background: 'var(--color-accent)', color: '#fff' }
+                                            : { color: 'var(--text-secondary)' }),
+                                    }}
+                                >
+                                    {t === 'admin' ? 'Admin / Operator' : 'Citizen'}
+                                </button>
+                            ))}
+                        </div>
+
+                        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                            <Input
+                                label="Email Address"
+                                type="email"
+                                icon={Mail}
+                                placeholder="you@example.com"
+                                error={errors.email?.message}
+                                {...register('email', {
+                                    required: 'Email is required',
+                                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+                                })}
+                            />
+
+                            <div className="relative">
+                                <Input
+                                    label="Password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    icon={Lock}
+                                    placeholder="Enter your password"
+                                    error={errors.password?.message}
+                                    {...register('password', { required: 'Password is required' })}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute cursor-pointer"
+                                    style={{ color: 'var(--text-tertiary)', right: '0.85rem', top: '2.35rem' }}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+
+                            <Button type="submit" loading={loading} className="w-full" size="lg" style={{ marginTop: '0.5rem' }}>
+                                Sign In
+                            </Button>
+                        </form>
+
+                        {tab === 'citizen' && (
+                            <p className="text-sm text-center" style={{ color: 'var(--text-tertiary)', marginTop: '1.5rem' }}>
+                                Don't have an account?{' '}
+                                <Link to="/register" className="font-medium hover:underline" style={{ color: 'var(--color-accent)' }}>
+                                    Create one
+                                </Link>
+                            </p>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
+export default Login;
