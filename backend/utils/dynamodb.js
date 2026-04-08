@@ -13,10 +13,9 @@ const TABLE_SCHEMAS = {
         IndexName: "email-index",
         KeySchema: [{ AttributeName: "email", KeyType: "HASH" }],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
     ],
-    ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+    BillingMode: "PAY_PER_REQUEST",
   },
 
   // Admins Table (3 types: SUPER_ADMIN, CENTER_ADMIN, OPERATOR)
@@ -32,16 +31,14 @@ const TABLE_SCHEMAS = {
         IndexName: "email-index",
         KeySchema: [{ AttributeName: "email", KeyType: "HASH" }],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
       {
         IndexName: "center-index",
         KeySchema: [{ AttributeName: "centerId", KeyType: "HASH" }],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
     ],
-    ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+    BillingMode: "PAY_PER_REQUEST",
   },
 
   // Centers Table (State → City → Centers)
@@ -56,17 +53,16 @@ const TABLE_SCHEMAS = {
         IndexName: "city-index",
         KeySchema: [{ AttributeName: "city", KeyType: "HASH" }],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
     ],
-    ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+    BillingMode: "PAY_PER_REQUEST",
   },
 
   // Services Table
   [process.env.SERVICES_TABLE]: {
     KeySchema: [{ AttributeName: "serviceId", KeyType: "HASH" }],
     AttributeDefinitions: [{ AttributeName: "serviceId", AttributeType: "S" }],
-    ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+    BillingMode: "PAY_PER_REQUEST",
   },
 
   // Appointments Table
@@ -84,7 +80,6 @@ const TABLE_SCHEMAS = {
         IndexName: "user-index",
         KeySchema: [{ AttributeName: "userId", KeyType: "HASH" }],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
       {
         IndexName: "center-date-index",
@@ -93,7 +88,6 @@ const TABLE_SCHEMAS = {
           { AttributeName: "date", KeyType: "RANGE" },
         ],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
       {
         IndexName: "center-date-slot-index",
@@ -102,10 +96,9 @@ const TABLE_SCHEMAS = {
           { AttributeName: "timeSlot", KeyType: "RANGE" },
         ],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
     ],
-    ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+    BillingMode: "PAY_PER_REQUEST",
   },
 
   // Operators Table
@@ -120,10 +113,9 @@ const TABLE_SCHEMAS = {
         IndexName: "center-index",
         KeySchema: [{ AttributeName: "centerId", KeyType: "HASH" }],
         Projection: { ProjectionType: "ALL" },
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
     ],
-    ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+    BillingMode: "PAY_PER_REQUEST",
   },
 };
 
