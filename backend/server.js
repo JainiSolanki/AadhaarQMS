@@ -62,6 +62,9 @@ app.use("/api/operators", require("./routes/operators"));
 app.use("/api/queue", require("./routes/queue"));
 app.use("/api/admin", require("./routes/admin"));
 
+// Public route — open CORS so the /qr SMS link works from any device/browser
+app.use("/api/public", cors({ origin: "*" }), require("./routes/public"));
+
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({
@@ -85,6 +88,10 @@ server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
+
+  // Start in-process no-show scheduler as a reliability fallback
+  const { startScheduler } = require("./services/schedulerService");
+  startScheduler();
 });
 
 // Graceful Shutdown

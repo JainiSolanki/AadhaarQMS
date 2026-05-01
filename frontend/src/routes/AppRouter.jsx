@@ -8,6 +8,7 @@ import LandingPage from '@pages/LandingPage';
 import Login from '@pages/auth/Login';
 import Register from '@pages/auth/Register';
 import ScanQR from '@pages/ScanQR';
+import ViewQR from '@pages/ViewQR';
 
 // Citizen
 import CitizenDashboard from '@pages/citizen/Dashboard';
@@ -47,6 +48,7 @@ const AppRouter = () => {
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
             <Route path="/scan-qr" element={<ScanQR />} />
+            <Route path="/qr" element={<ViewQR />} />
 
             {/* Citizen */}
             <Route path="/citizen/dashboard" element={<ProtectedRoute allowedRoles={[ROLES.CITIZEN]}><CitizenDashboard /></ProtectedRoute>} />

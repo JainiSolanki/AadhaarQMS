@@ -25,10 +25,19 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    open: true,
+    host: '0.0.0.0', // Listen on all network interfaces
+    strictPort: false,
+    allowedHosts: 'all', // Allow all hosts (safe in dev, only applies locally)
+    cors: true, // Enable CORS
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
+    },
   },
   build: {
     outDir: "dist",
     sourcemap: true,
   },
 });
+

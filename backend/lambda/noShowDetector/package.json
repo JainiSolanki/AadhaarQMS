@@ -1,0 +1,7 @@
+{
+  "name": "aadhaarqms-no-show-detector",
+  "version": "1.0.0",
+  "description": "AadhaarQMS No-Show Detection Lambda",
+  "main": "index.js",
+  "dependencies": {}
+}

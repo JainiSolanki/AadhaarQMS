@@ -19,6 +19,8 @@ const {
 const { validateAppointment } = require("../middleware/validation");
 const { ROLES, STATUSES } = require("../utils/constants");
 const { notifyOperator, notifyCenter } = require("../socket/socketManager");
+const { sendBookingConfirmation } = require("../services/smsService");
+const { sendBookingConfirmation: sendBookingEmail } = require("../services/emailService");
 
 // ═══════════════════════════════════════════════════════════════
 // HELPER: Round-robin auto-assign operator (least loaded)
@@ -228,8 +230,34 @@ router.post(
       };
       const qrCode = await generateQRCode(qrData);
 
-      // TODO: Send confirmation email when email service is configured
-      // sendBookingConfirmation({ email, name, appointment, qrCode });
+      // Send confirmation SMS with QR link (non-blocking — failure does not affect booking)
+      sendBookingConfirmation({
+        phone: user.phone,
+        name: appointment.name,
+        appointmentId,
+        tokenNumber,
+        date,
+        timeSlot,
+        centerName: center.name,
+      }).catch((err) =>
+        console.error("SMS send error (non-fatal):", err.message)
+      );
+
+      // Send confirmation EMAIL with QR code (non-blocking — failure does not affect booking)
+      sendBookingEmail({
+        email: user.email,
+        name: appointment.name,
+        appointmentId,
+        tokenNumber,
+        date,
+        timeSlot,
+        centerName: center.name,
+        centerCity: center.city,
+        serviceName: service.name,
+        qrCode, // base64 data URL
+      }).catch((err) =>
+        console.error("Email send error (non-fatal):", err.message)
+      );
 
       res.status(201).json({
         success: true,
